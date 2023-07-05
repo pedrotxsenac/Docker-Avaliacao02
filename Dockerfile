@@ -1,24 +1,12 @@
+FROM node:16-alpine
 
-FROM node:16-alpine AS development
+WORKDIR /app
 
-WORKDIR /usr/src/app
+COPY package*.json .
+COPY yarn.lock .
 
-COPY package*.json yarn.lock ./
-
-RUN yarn install
+RUN yarn
 
 COPY . .
 
 CMD ["yarn", "start:dev"]
-
-FROM node:16-alpine AS production
-
-WORKDIR /usr/src/app
-
-COPY package*.json yarn.lock ./
-
-RUN yarn install --production
-
-COPY . .
-
-RUN yarn build
