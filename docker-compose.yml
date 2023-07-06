@@ -1,30 +1,40 @@
-version: '3'
-services:
+version: '3.7'
+services: 
   api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: Dockerfile
+    container_name: API
+    build: .
+    ports:
+      - 3000:3000
     volumes:
-      - .:/app
+      - ./:/app
       - /app/node_modules
+    env_file:
+      - .env
+    networks:
+      - docker_network
     depends_on:
       - db
-    networks:
-      - docker-network
 
   db:
-    container_name: db
+    container_name: BD
     image: postgres:13-alpine
-    environment:
-      POSTGRES_USER: 'test'
-      POSTGRES_PASSWORD: 'test'
-      POSTGRES_DB: 'test'
     ports:
-      - '5432:5432'
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${TYPEORM_DATABASE}
+      POSTGRES_USER: ${TYPEORM_USERNAME}
+      POSTGRES_PASSWORD: ${TYPEORM_PASSWORD}
+      
+    volumes:
+      - api_db_data:/var/lib/postgresql/data
     networks:
-      - docker-network
+      - docker_network
+    
+    
+
 
 networks:
-  docker-network:
-    driver: bridge
+  docker_network:
+
+volumes:
+  api_db_data:
